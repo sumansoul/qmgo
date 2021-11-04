@@ -127,8 +127,9 @@ func Open(ctx context.Context, conf *Config, o ...options.ClientOptions) (cli *Q
 
 // Client creates client to mongo
 type Client struct {
-	client *mongo.Client
-	conf   Config
+	client       *mongo.Client
+	PublicClient *mongo.Client
+	conf         Config
 
 	registry *bsoncodec.Registry
 }
@@ -145,9 +146,10 @@ func NewClient(ctx context.Context, conf *Config, o ...options.ClientOptions) (c
 		return
 	}
 	cli = &Client{
-		client:   client,
-		conf:     *conf,
-		registry: opt.Registry,
+		client:       client,
+		PublicClient: client,
+		conf:         *conf,
+		registry:     opt.Registry,
 	}
 	return
 }
