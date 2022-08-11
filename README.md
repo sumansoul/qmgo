@@ -97,7 +97,7 @@ Or
     Create index
     
     ```go
-    cli.CreateOneIndex(context.Background(), options.IndexModel{Key: []string{"name"}, Unique: true})
+    cli.CreateOneIndex(context.Background(), options.IndexModel{Key: []string{"name"}})
     cli.CreateIndexes(context.Background(), []options.IndexModel{{Key: []string{"id2", "id3"}}})
     ```
 
@@ -378,6 +378,5 @@ The Qmgo project welcomes all contributors. We appreciate your help!
 
 ## Communication:
 
-- Join [gitter room](https://gitter.im/qiniu/qmgo)
 - Join [qmgo discussions](https://github.com/qiniu/qmgo/discussions)
 

@@ -29,17 +29,33 @@ import (
 
 // Query struct definition
 type Query struct {
-	filter  interface{}
-	sort    interface{}
-	project interface{}
-	hint    interface{}
-	limit   *int64
-	skip    *int64
+	filter          interface{}
+	sort            interface{}
+	project         interface{}
+	hint            interface{}
+	limit           *int64
+	skip            *int64
+	batchSize       *int64
+	noCursorTimeout *bool
 
 	ctx        context.Context
 	collection *mongo.Collection
 	opts       []qOpts.FindOptions
 	registry   *bsoncodec.Registry
+}
+
+func (q *Query) NoCursorTimeout(n bool) QueryI {
+	newQ := q
+	newQ.noCursorTimeout = &n
+	return newQ
+}
+
+// BatchSize sets the value for the BatchSize field.
+// Means the maximum number of documents to be included in each batch returned by the server.
+func (q *Query) BatchSize(n int64) QueryI {
+	newQ := q
+	newQ.batchSize = &n
+	return newQ
 }
 
 // Sort is Used to set the sorting rules for the returned results
@@ -147,7 +163,6 @@ func (q *Query) All(result interface{}) error {
 		}
 	}
 	opt := options.Find()
-
 	if q.sort != nil {
 		opt.SetSort(q.sort)
 	}
@@ -162,6 +177,12 @@ func (q *Query) All(result interface{}) error {
 	}
 	if q.hint != nil {
 		opt.SetHint(q.hint)
+	}
+	if q.batchSize != nil {
+		opt.SetBatchSize(int32(*q.batchSize))
+	}
+	if q.noCursorTimeout != nil {
+		opt.SetNoCursorTimeout(*q.noCursorTimeout)
 	}
 
 	var err error
@@ -198,6 +219,11 @@ func (q *Query) Count() (n int64, err error) {
 	}
 
 	return q.collection.CountDocuments(q.ctx, q.filter, opt)
+}
+
+// EstimatedCount count the number of the collection by using the metadata
+func (q *Query) EstimatedCount() (n int64, err error) {
+	return q.collection.EstimatedDocumentCount(q.ctx)
 }
 
 // Distinct gets the unique value of the specified field in the collection and return it in the form of slice
@@ -257,6 +283,13 @@ func (q *Query) Cursor() CursorI {
 	}
 	if q.skip != nil {
 		opt.SetSkip(*q.skip)
+	}
+
+	if q.batchSize != nil {
+		opt.SetBatchSize(int32(*q.batchSize))
+	}
+	if q.noCursorTimeout != nil {
+		opt.SetNoCursorTimeout(*q.noCursorTimeout)
 	}
 
 	var err error

@@ -93,7 +93,7 @@ go get github.com/qiniu/qmgo
     创建索引
 
     ```go
-    cli.CreateOneIndex(context.Background(), options.IndexModel{Key: []string{"name"}, Unique: true})
+    cli.CreateOneIndex(context.Background(), options.IndexModel{Key: []string{"name"}})
     cli.CreateIndexes(context.Background(), []options.IndexModel{{Key: []string{"id2", "id3"}}})
     ```
 
@@ -378,7 +378,5 @@ coll.Find(bson.M{"age": 6}).Sort("weight").Limit(7).All(&batch)
 
 
 ## 沟通交流:
-
-- 加入 [gitter room](https://gitter.im/qiniu/qmgo)
 
 - 加入 [qmgo discussions](https://github.com/qiniu/qmgo/discussions)
